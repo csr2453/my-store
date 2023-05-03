@@ -1,5 +1,7 @@
 //Configuramos el servidor xpress
 const express = require('express');
+const { faker } = require('@faker-js/faker')
+
 const app = express();
 const port = 3000;
 
@@ -15,12 +17,20 @@ app.get('/new-path', (request, response) => {
 
 //Ruta productos
 app.get('/products',(request,response)=>{
-  response.json(
-    [
-      {name:'Cellphone',price:7000},
-      {name:'Mouse',price:10},
-    ]
-  );
+  const products = [];
+  const {size} = request.query;
+  const limit = size || 10;
+  for (let index=0; index<limit; index++){
+    products.push(
+      {
+      name: faker.commerce.productName(),
+      price: parseInt(faker.commerce.price(),10),
+      image: faker.image.imageUrl(),
+      }
+    );
+  }
+
+  response.json(products);
 });
 //Recuperamos un product especifico
 app.get( '/products/:id', (request, response) =>{
@@ -30,7 +40,40 @@ app.get( '/products/:id', (request, response) =>{
   );
 } );
 
+app.get('/categories/:categoryId/products/:productId',(req,res)=>{
+  //De esta manera obtenemos los parametros que estan llegando por get
+  const{categoryId, productId}=req.params;
+  res.json(
+    {
+      categoryId,
+      productId,
+    }
+  );
+});
+
+
+//COMO OBTENER PARAMETROS DE TIPO QUERYPARAMS
+app.get('/users',(req,res)=>{
+  const{limit, offset} = req.query;
+  if(limit && offset){
+    res.json({
+      limit,
+      offset
+    });
+  }else{
+    res.send('No hay parametros');
+  }
+})
+
+
+
+
+
 //Le decimos a la app que escuche en un puerto específico
 app.listen(port, () => {
   console.log('My port: ' + port);
 });
+
+
+
+
