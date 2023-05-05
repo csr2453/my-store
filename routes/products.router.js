@@ -18,19 +18,56 @@ router.get('/',(request,response)=>{
     );
   }
 
-  response.json(products);
-});
-
-roter.get('/filter', (req, res)=>{
-  res.send('I am a filter');
+  response.status(200).json(products);
 });
 
 //Recuperamos un product especifico
 router.get( '/:id', (request, response) =>{
   const id = request.params.id;
-  response.json(
-    {id, name:'Keyboard', price:22},
-  );
+  if( id==='999' ){
+    response.status(404).json(
+      {
+        message:'Not found',
+      }
+    );
+  }else{
+    response.status(200).json(
+      {id, name:'Keyboard', price:22},
+    );
+  }
+
 } );
+
+router.post('/', (req,res)=>{
+  const body = req.body;
+  res.status(201).json(
+    {
+      message:'Created',
+      data:body,
+    }
+  );
+});
+
+router.patch('/:id', (req,res)=>{
+  const{id}=req.params;
+  const body = req.body;
+  res.status(201).json(
+    {
+      id,
+      message:'Partial Updated',
+      data:body,
+    }
+  );
+});
+
+router.delete('/:id',(req,res)=>{
+  const {id}=req.params;
+  res.json(
+    {
+      message:'Deleted',
+      id,
+    }
+  );
+});
 
 module.exports = router;
